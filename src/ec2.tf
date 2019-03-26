@@ -8,6 +8,8 @@ resource "aws_instance" "app1" {
 
     availability_zone="ap-northeast-1a"
 
+    vpc_security_group_ids=["${aws_security_group.allow-from-elb-and-ssh.id}"]
+
     tags = {
         Name = "${terraform.workspace}-app1"
     }
@@ -21,6 +23,8 @@ resource "aws_instance" "app2" {
     key_name = "myFirstKey"
 
     availability_zone="ap-northeast-1a"
+
+    vpc_security_group_ids=["${aws_security_group.allow-from-elb-and-ssh.id}"]
 
     tags = {
         Name = "${terraform.workspace}-app2"
@@ -91,3 +95,36 @@ resource "aws_security_group" "allow-from-elb-and-ssh" {
         Name = "${terraform.workspace}-allow-from-elb-and-ssh"
     }
 }
+
+resource "aws_security_group" "allow-all-access" {
+    name = "${terraform.workspace}allow-all-access"
+    description = "allow from elb and ssh for ${terraform.workspace}"
+    vpc_id = "${aws_vpc.vpc.id}"
+
+    ## for elb
+    ingress {
+        from_port = 0
+        to_port = 65535
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        from_port = 0
+        to_port = 65535
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    egress {
+        from_port       = 0
+        to_port         = 0
+        protocol        = "-1"
+        cidr_blocks     = ["0.0.0.0/0"]
+    }
+
+    tags = {
+        Name = "${terraform.workspace}-allow-all-access"
+    }
+}
+
