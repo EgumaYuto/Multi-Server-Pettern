@@ -3,7 +3,7 @@ terraform {
     backend "s3" {
         bucket = "cabos-tfstate"
         region = "ap-northeast-1"
-        key = "terraform.tfstate"
+        key = "multi-server-pattern/terraform.tfstate"
         encrypt = true
     }
 }

@@ -6,9 +6,10 @@ resource "aws_instance" "app1" {
     ## TODO remove this
     key_name = "myFirstKey"
 
-    availability_zone="ap-northeast-1a"
-
-    vpc_security_group_ids=["${aws_security_group.allow-from-elb-and-ssh.id}"]
+    security_groups = [
+        "${aws_security_group.allow-from-elb-and-ssh.id}",
+    ]
+    subnet_id = "${aws_subnet.app-subnet-1a.id}"
 
     tags = {
         Name = "${terraform.workspace}-app1"
@@ -22,9 +23,10 @@ resource "aws_instance" "app2" {
     ## TODO remove this
     key_name = "myFirstKey"
 
-    availability_zone="ap-northeast-1a"
-
-    vpc_security_group_ids=["${aws_security_group.allow-from-elb-and-ssh.id}"]
+    security_groups = [
+        "${aws_security_group.allow-from-elb-and-ssh.id}",
+    ]
+    subnet_id = "${aws_subnet.app-subnet-1c.id}"
 
     tags = {
         Name = "${terraform.workspace}-app2"
@@ -34,7 +36,7 @@ resource "aws_instance" "app2" {
 ## load balancer
 resource "aws_elb" "app-elb" {
     name = "app-elb"
-    availability_zones = ["ap-northeast-1a","ap-northeast-1c","ap-northeast-1d"]
+    subnets = ["${aws_subnet.app-subnet-1a.id}", "${aws_subnet.app-subnet-1c.id}"]
 
     listener {
         instance_port     = 80
@@ -66,7 +68,7 @@ resource "aws_elb" "app-elb" {
 resource "aws_security_group" "allow-from-elb-and-ssh" {
     name = "${terraform.workspace}-allow-from-elb-and-ssh"
     description = "allow from elb and ssh for ${terraform.workspace}"
-    vpc_id = "${aws_vpc.vpc.id}"
+    vpc_id = "${var.vpc_id}"
 
     ## for ssh
     ingress {
@@ -81,7 +83,7 @@ resource "aws_security_group" "allow-from-elb-and-ssh" {
         from_port = 80
         to_port = 80
         protocol = "tcp"
-        cidr_blocks = ["${aws_vpc.vpc.cidr_block}"]
+        cidr_blocks = ["${var.vpc_cidr_block}"]
     }
 
     egress {
@@ -99,7 +101,7 @@ resource "aws_security_group" "allow-from-elb-and-ssh" {
 resource "aws_security_group" "allow-all-access" {
     name = "${terraform.workspace}allow-all-access"
     description = "allow from elb and ssh for ${terraform.workspace}"
-    vpc_id = "${aws_vpc.vpc.id}"
+    vpc_id = "${var.vpc_id}"
 
     ## for elb
     ingress {
