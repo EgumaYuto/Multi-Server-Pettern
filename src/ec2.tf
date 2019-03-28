@@ -99,7 +99,7 @@ resource "aws_security_group" "allow-from-elb-and-ssh" {
 }
 
 resource "aws_security_group" "allow-all-access" {
-    name = "${terraform.workspace}allow-all-access"
+    name = "${terraform.workspace}-allow-all-access"
     description = "allow from elb and ssh for ${terraform.workspace}"
     vpc_id = "${var.vpc_id}"
 
