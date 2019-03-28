@@ -11,6 +11,8 @@ resource "aws_instance" "app1" {
     ]
     subnet_id = "${aws_subnet.app-subnet-1a.id}"
 
+    associate_public_ip_address = true
+
     tags = {
         Name = "${terraform.workspace}-app1"
     }
@@ -27,6 +29,8 @@ resource "aws_instance" "app2" {
         "${aws_security_group.allow-from-elb-and-ssh.id}",
     ]
     subnet_id = "${aws_subnet.app-subnet-1c.id}"
+
+    associate_public_ip_address = true
 
     tags = {
         Name = "${terraform.workspace}-app2"
