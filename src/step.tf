@@ -1,3 +1,6 @@
+#################
+## subnet
+#################
 resource "aws_subnet" "step-subnet-1a" {
   vpc_id     = "${var.vpc_id}"
   cidr_block = "172.31.32.0/20"
@@ -10,6 +13,9 @@ resource "aws_subnet" "step-subnet-1a" {
   }
 }
 
+#################
+## instance
+#################
 resource "aws_instance" "step1" {
   ami = "ami-0f9ae750e8274075b"
   instance_type = "t2.micro"
@@ -28,6 +34,9 @@ resource "aws_instance" "step1" {
   }
 }
 
+#################
+## security group
+#################
 resource "aws_security_group" "allow-from-all-ssh-access" {
   name = "${terraform.workspace}-allow-from-all-ssh-access"
   description = "allow from all ssh access for ${terraform.workspace}"
