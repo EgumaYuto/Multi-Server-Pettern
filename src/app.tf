@@ -3,15 +3,12 @@ resource "aws_instance" "app1" {
     ami = "ami-0f9ae750e8274075b"
     instance_type = "t2.micro"
 
-    ## TODO remove this
     key_name = "myFirstKey"
 
     security_groups = [
-        "${aws_security_group.allow-from-elb-and-ssh.id}",
+        "${aws_security_group.allow-from-elb-and-step.id}",
     ]
     subnet_id = "${aws_subnet.app-subnet-1a.id}"
-
-    associate_public_ip_address = true
 
     tags = {
         Name = "${terraform.workspace}-app1"
@@ -22,15 +19,12 @@ resource "aws_instance" "app2" {
     ami = "ami-0f9ae750e8274075b"
     instance_type = "t2.micro"
 
-    ## TODO remove this
     key_name = "myFirstKey"
 
     security_groups = [
-        "${aws_security_group.allow-from-elb-and-ssh.id}",
+        "${aws_security_group.allow-from-elb-and-step.id}",
     ]
     subnet_id = "${aws_subnet.app-subnet-1c.id}"
-
-    associate_public_ip_address = true
 
     tags = {
         Name = "${terraform.workspace}-app2"
@@ -69,9 +63,9 @@ resource "aws_elb" "app-elb" {
 }
 
 ## security group
-resource "aws_security_group" "allow-from-elb-and-ssh" {
-    name = "${terraform.workspace}-allow-from-elb-and-ssh"
-    description = "allow from elb and ssh for ${terraform.workspace}"
+resource "aws_security_group" "allow-from-elb-and-step" {
+    name = "${terraform.workspace}-allow-from-elb-and-step"
+    description = "allow from elb and step for ${terraform.workspace}"
     vpc_id = "${var.vpc_id}"
 
     ## for ssh
@@ -79,7 +73,7 @@ resource "aws_security_group" "allow-from-elb-and-ssh" {
         from_port = 22
         to_port = 22
         protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = ["${aws_subnet.step-subnet-1a.cidr_block}"]
     }
 
     ## for elb
@@ -98,7 +92,7 @@ resource "aws_security_group" "allow-from-elb-and-ssh" {
     }
 
     tags = {
-        Name = "${terraform.workspace}-allow-from-elb-and-ssh"
+        Name = "${terraform.workspace}-allow-from-elb-and-step"
     }
 }
 
@@ -112,7 +106,7 @@ resource "aws_security_group" "allow-all-access" {
         from_port = 0
         to_port = 65535
         protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = ["${aws_subnet.step-subnet-1a.cidr_block}"]
     }
 
     ingress {
