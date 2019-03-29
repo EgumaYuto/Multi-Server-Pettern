@@ -25,7 +25,7 @@ resource "aws_instance" "step1" {
   security_groups = [
     "${aws_security_group.allow-from-all-ssh-access.id}",
   ]
-  subnet_id = "${aws_subnet.app-subnet-1a.id}"
+  subnet_id = "${aws_subnet.step-subnet-1a.id}"
 
   associate_public_ip_address = true
 
